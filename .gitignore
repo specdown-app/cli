@@ -1,0 +1,28 @@
+# Build output
+dist/
+
+# Dependencies
+node_modules/
+
+# Lockfile (committed only in apps, not libraries/CLI packages)
+package-lock.json
+
+# Local env / secrets
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Test / coverage
+coverage/
+*.lcov
+
+# Publish artefacts (created by npm pack)
+*.tgz
