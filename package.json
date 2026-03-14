@@ -1,25 +1,35 @@
 {
-  "name": "specdown",
-  "version": "0.1.0",
+  "name": "specdown-cli",
+  "version": "0.1.1",
   "description": "CLI for SpecDown — manage spec docs from your terminal",
   "type": "module",
-  "engines": { "node": ">=18" },
-  "bin": {
-    "specdown": "./dist/index.js"
+  "engines": {
+    "node": ">=18"
   },
-  "files": ["dist"],
+  "bin": {
+    "specdown": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsx src/index.ts",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["specdown", "cli", "docs", "markdown", "spec"],
+  "keywords": [
+    "specdown",
+    "cli",
+    "docs",
+    "markdown",
+    "spec"
+  ],
   "author": "SpecDown",
   "license": "MIT",
   "homepage": "https://specdown.app",
   "repository": {
     "type": "git",
-    "url": "https://github.com/specdown-app/cli"
+    "url": "git+https://github.com/specdown-app/cli.git"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.97.0",

@@ -87,7 +87,7 @@ fi
 # ── Publish to npm ────────────────────────────────────────────────────────────
 info "Publishing v$NEW_VERSION to npm…"
 run "npm publish --access public"
-success "Published specdown@$NEW_VERSION to npm  →  https://www.npmjs.com/package/specdown"
+success "Published specdown-cli@$NEW_VERSION to npm  →  https://www.npmjs.com/package/specdown"
 
 # ── Git tag ───────────────────────────────────────────────────────────────────
 info "Committing version bump and tagging…"

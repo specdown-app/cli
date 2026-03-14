@@ -1,0 +1,53 @@
+name: Publish to npm
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    name: Build & publish specdown CLI
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Check if version already published
+        id: version_check
+        run: |
+          PKG_NAME=$(node -p "require('./package.json').name")
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          echo "version=$PKG_VERSION" >> $GITHUB_OUTPUT
+          if npm show "$PKG_NAME@$PKG_VERSION" version &>/dev/null 2>&1; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "Version $PKG_VERSION already published — skipping"
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "Version $PKG_VERSION not yet published — will publish"
+          fi
+
+      - name: Publish to npm
+        if: steps.version_check.outputs.skip == 'false'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Summary
+        run: |
+          if [ "${{ steps.version_check.outputs.skip }}" == "true" ]; then
+            echo "### ⏭️ Skipped — v${{ steps.version_check.outputs.version }} already on npm" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ✅ Published specdown-cli@${{ steps.version_check.outputs.version }} to npm" >> $GITHUB_STEP_SUMMARY
+            echo "https://www.npmjs.com/package/specdown-cli" >> $GITHUB_STEP_SUMMARY
+          fi

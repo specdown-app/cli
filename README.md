@@ -1,9 +1,9 @@
 # SpecDown CLI
 
 <p align="center">
-  <img src="https://img.shields.io/npm/v/specdown?color=blue" alt="npm version" />
-  <img src="https://img.shields.io/node/v/specdown" alt="node" />
-  <img src="https://img.shields.io/npm/dm/specdown" alt="downloads" />
+  <img src="https://img.shields.io/npm/v/specdown-cli?color=blue" alt="npm version" />
+  <img src="https://img.shields.io/node/v/specdown-cli" alt="node" />
+  <img src="https://img.shields.io/npm/dm/specdown-cli" alt="downloads" />
 </p>
 
 **CLI for [SpecDown](https://specdown.app)** — manage your Markdown spec docs from the terminal.
@@ -15,10 +15,10 @@ Read, write, push, pull, and search spec documents. Works great in CI/CD pipelin
 
 ```bash
 # Run without installing (recommended):
-npx specdown --help
+npx specdown-cli --help
 
 # Or install globally:
-npm install -g specdown
+npm install -g specdown-cli
 ```
 
 **Requirements:** Node.js ≥ 18
