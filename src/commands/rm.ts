@@ -4,11 +4,16 @@ import { getClient } from '../lib/api.js'
 import { requireAuth, requireProject } from '../lib/config.js'
 import { ask } from '../lib/prompt.js'
 
+function normalizePath(p: string) {
+  return p.startsWith('/') ? p : `/${p}`
+}
+
 export async function rm(docPath: string, opts: { force?: boolean }) {
   const cfg = requireAuth()
   const project = requireProject(cfg)
   const supabase = getClient(cfg)
-  const spinner = ora(`Looking up ${docPath}…`).start()
+  const fullPath = normalizePath(docPath)
+  const spinner = ora(`Looking up ${fullPath}…`).start()
 
   try {
     const { data, error } = await supabase
@@ -16,11 +21,11 @@ export async function rm(docPath: string, opts: { force?: boolean }) {
       .select('id, title, is_folder')
       .eq('project_id', project.id)
       .is('deleted_at', null)
-      .or(`full_path.eq.${docPath},slug.eq.${docPath}`)
+      .eq('full_path', fullPath)
       .single()
 
     if (error || !data) {
-      spinner.fail(chalk.red(`Document not found: ${docPath}`))
+      spinner.fail(chalk.red(`Document not found: ${fullPath}`))
       process.exit(1)
     }
 
@@ -43,10 +48,9 @@ export async function rm(docPath: string, opts: { force?: boolean }) {
       .eq('id', data.id)
 
     if (delErr) throw delErr
-    deleteSpinner.succeed(chalk.green(`Deleted: ${docPath}`))
-  } catch (err) {
+    deleteSpinner.succeed(chalk.green(`Deleted: ${fullPath}`))
+  } catch {
     spinner.fail(chalk.red('Delete failed'))
-    console.error(err)
     process.exit(1)
   }
 }

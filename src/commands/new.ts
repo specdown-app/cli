@@ -8,6 +8,10 @@ interface NewOptions {
   parent?: string
 }
 
+function normalizePath(p: string) {
+  return p.startsWith('/') ? p : `/${p}`
+}
+
 export async function newDoc(title: string, opts: NewOptions) {
   const cfg = requireAuth()
   const project = requireProject(cfg)
@@ -16,15 +20,19 @@ export async function newDoc(title: string, opts: NewOptions) {
 
   try {
     const slug = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+    const docSlug = opts.folder ? slug : `${slug}.md`
 
     let parentId: string | null = null
+    let dirPath = '/'
+
     if (opts.parent) {
+      const parentPath = normalizePath(opts.parent)
       const { data: parentDoc } = await supabase
         .from('documents')
-        .select('id')
+        .select('id, full_path')
         .eq('project_id', project.id)
         .eq('is_folder', true)
-        .or(`full_path.eq.${opts.parent},slug.eq.${opts.parent}`)
+        .eq('full_path', parentPath)
         .single()
 
       if (!parentDoc) {
@@ -32,16 +40,20 @@ export async function newDoc(title: string, opts: NewOptions) {
         process.exit(1)
       }
       parentId = parentDoc.id
+      dirPath = (parentDoc.full_path ?? '') + '/'
     }
+
+    const fullPath = `${dirPath}${docSlug}`
 
     const { data, error } = await supabase
       .from('documents')
       .insert({
         project_id: project.id,
+        created_by: cfg.user_id,
         title,
-        slug,
-        path: slug,
-        full_path: opts.parent ? `${opts.parent}/${slug}` : slug,
+        slug: docSlug,
+        path: dirPath,
+        full_path: fullPath,
         is_folder: opts.folder ?? false,
         parent_id: parentId,
         sort_order: 9999,
@@ -52,9 +64,8 @@ export async function newDoc(title: string, opts: NewOptions) {
 
     if (error) throw error
     spinner.succeed(chalk.green(`Created: ${data.full_path}`))
-  } catch (err) {
+  } catch {
     spinner.fail(chalk.red('Failed to create document'))
-    console.error(err)
     process.exit(1)
   }
 }

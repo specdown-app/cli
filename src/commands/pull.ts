@@ -5,6 +5,10 @@ import ora from 'ora'
 import { getClient } from '../lib/api.js'
 import { requireAuth, requireProject } from '../lib/config.js'
 
+function normalizePath(p: string) {
+  return p.startsWith('/') ? p : `/${p}`
+}
+
 export async function pull(docPath: string, outFile?: string) {
   const cfg = requireAuth()
   const project = requireProject(cfg)
@@ -18,7 +22,7 @@ export async function pull(docPath: string, outFile?: string) {
       .eq('project_id', project.id)
       .eq('is_folder', false)
       .is('deleted_at', null)
-      .or(`full_path.eq.${docPath},slug.eq.${docPath}`)
+      .eq('full_path', normalizePath(docPath))
       .single()
 
     if (error || !data) {
@@ -37,9 +41,8 @@ export async function pull(docPath: string, outFile?: string) {
       spinner.stop()
       process.stdout.write(content)
     }
-  } catch (err) {
+  } catch {
     spinner.fail(chalk.red('Pull failed'))
-    console.error(err)
     process.exit(1)
   }
 }

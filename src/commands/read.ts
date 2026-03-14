@@ -4,12 +4,13 @@ import { getClient } from '../lib/api.js'
 import { requireAuth, requireProject } from '../lib/config.js'
 
 interface ReadOptions {
-  /** Start line (1-based, inclusive) */
   from?: string
-  /** End line (1-based, inclusive) */
   to?: string
-  /** Show line numbers */
   lineNumbers?: boolean
+}
+
+function normalizePath(p: string) {
+  return p.startsWith('/') ? p : `/${p}`
 }
 
 export async function readDoc(pathArg: string, opts: ReadOptions) {
@@ -25,7 +26,7 @@ export async function readDoc(pathArg: string, opts: ReadOptions) {
       .eq('project_id', project.id)
       .eq('is_folder', false)
       .is('deleted_at', null)
-      .or(`full_path.eq.${pathArg},slug.eq.${pathArg}`)
+      .eq('full_path', normalizePath(pathArg))
       .single()
 
     if (error || !data) {
@@ -37,7 +38,6 @@ export async function readDoc(pathArg: string, opts: ReadOptions) {
 
     const rawLines = (data.content ?? '').split('\n')
     const totalLines = rawLines.length
-
     const fromLine = opts.from ? Math.max(1, parseInt(opts.from, 10)) : 1
     const toLine = opts.to ? Math.min(totalLines, parseInt(opts.to, 10)) : totalLines
 
@@ -52,22 +52,18 @@ export async function readDoc(pathArg: string, opts: ReadOptions) {
         ? `${totalLines} lines`
         : `lines ${fromLine}–${toLine} of ${totalLines}`
 
-    console.log(
-      chalk.gray(`# ${data.full_path}  (${rangeLabel}, updated ${new Date(data.updated_at).toLocaleString()})\n`)
-    )
+    console.log(chalk.gray(`# ${data.full_path}  (${rangeLabel}, updated ${new Date(data.updated_at).toLocaleString()})\n`))
 
     if (opts.lineNumbers) {
       const padWidth = String(toLine).length
-      selectedLines.forEach((line, i) => {
-        const lineNo = chalk.gray(String(fromLine + i).padStart(padWidth) + '  ')
-        console.log(lineNo + line)
+      selectedLines.forEach((line: string, i: number) => {
+        console.log(chalk.gray(String(fromLine + i).padStart(padWidth) + '  ') + line)
       })
     } else {
       console.log(selectedLines.join('\n'))
     }
-  } catch (err) {
+  } catch {
     spinner.fail(chalk.red('Failed to read document'))
-    console.error(err)
     process.exit(1)
   }
 }

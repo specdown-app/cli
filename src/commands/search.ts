@@ -4,9 +4,7 @@ import { getClient } from '../lib/api.js'
 import { requireAuth, requireProject } from '../lib/config.js'
 
 interface SearchOptions {
-  /** Comma-separated doc paths/slugs to restrict search */
   files?: string
-  /** Show N lines of context around each match (default 2) */
   context?: string
 }
 
@@ -20,8 +18,8 @@ interface Match {
 
 function searchInContent(content: string, query: string, contextLines: number): Omit<Match, 'docPath'>[] {
   const lines = content.split('\n')
-  const results: Omit<Match, 'docPath'>[] = []
   const lower = query.toLowerCase()
+  const results: Omit<Match, 'docPath'>[] = []
 
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].toLowerCase().includes(lower)) {
@@ -46,40 +44,42 @@ function highlight(line: string, query: string): string {
   )
 }
 
-function printContextLine(lineNo: number, line: string, dim = true) {
-  const num = chalk.gray(String(lineNo).padStart(4) + ' │ ')
-  console.log(num + (dim ? chalk.dim(line) : line))
+function printContextLine(lineNo: number, line: string) {
+  console.log(chalk.gray(String(lineNo).padStart(4) + ' │ ') + chalk.dim(line))
 }
 
 export async function search(query: string, opts: SearchOptions) {
   const cfg = requireAuth()
   const project = requireProject(cfg)
   const supabase = getClient(cfg)
-  const contextLines = parseInt(opts.context ?? '2', 10)
+  const contextLines = Math.min(parseInt(opts.context ?? '2', 10), 10)
 
   const spinner = ora('Searching…').start()
 
   try {
+    // Server-side filter with ilike to avoid downloading all docs
     let q = supabase
       .from('documents')
       .select('full_path, slug, content')
       .eq('project_id', project.id)
       .eq('is_folder', false)
       .is('deleted_at', null)
+      .ilike('content', `%${query}%`)  // pre-filter on server
+      .order('full_path')
+      .limit(100)  // hard cap
 
-    // Restrict to specific files if --files provided
     if (opts.files) {
-      const paths = opts.files.split(',').map((s) => s.trim())
-      const orClauses = paths.flatMap((p) => [`full_path.eq.${p}`, `slug.eq.${p}`]).join(',')
-      q = q.or(orClauses)
+      const paths = opts.files.split(',').map((s) => s.trim()).filter(Boolean)
+      if (paths.length > 0) {
+        q = q.in('full_path', paths.map((p) => p.startsWith('/') ? p : `/${p}`))
+      }
     }
 
-    const { data, error } = await q.order('full_path')
+    const { data, error } = await q
     if (error) throw error
 
     spinner.stop()
 
-    let totalMatches = 0
     const allMatches: Match[] = []
 
     for (const doc of data ?? []) {
@@ -88,7 +88,6 @@ export async function search(query: string, opts: SearchOptions) {
       for (const h of hits) {
         allMatches.push({ docPath: doc.full_path ?? doc.slug, ...h })
       }
-      totalMatches += hits.length
     }
 
     if (!allMatches.length) {
@@ -96,7 +95,6 @@ export async function search(query: string, opts: SearchOptions) {
       return
     }
 
-    // Group and print by file
     let currentFile = ''
     for (const m of allMatches) {
       if (m.docPath !== currentFile) {
@@ -106,30 +104,21 @@ export async function search(query: string, opts: SearchOptions) {
         console.log(chalk.gray('─'.repeat(50)))
       }
 
-      // Context before
-      m.before.forEach((l, i) =>
-        printContextLine(m.lineNo - m.before.length + i, l)
-      )
-      // Matching line
-      const num = chalk.green(String(m.lineNo).padStart(4) + ' │ ')
-      console.log(num + highlight(m.line, query))
-      // Context after
+      m.before.forEach((l, i) => printContextLine(m.lineNo - m.before.length + i, l))
+      console.log(chalk.green(String(m.lineNo).padStart(4) + ' │ ') + highlight(m.line, query))
       m.after.forEach((l, i) => printContextLine(m.lineNo + 1 + i, l))
-
-      if (m.after.length || m.before.length) {
-        console.log(chalk.gray('     ·'))
-      }
+      if (m.after.length || m.before.length) console.log(chalk.gray('     ·'))
     }
 
+    const fileCount = new Set(allMatches.map((m) => m.docPath)).size
     console.log()
     console.log(
-      chalk.bold(`${totalMatches} match${totalMatches === 1 ? '' : 'es'}`) +
-        chalk.gray(` across ${new Set(allMatches.map((m) => m.docPath)).size} file(s) in `) +
-        chalk.bold(project.name)
+      chalk.bold(`${allMatches.length} match${allMatches.length === 1 ? '' : 'es'}`) +
+      chalk.gray(` across ${fileCount} file${fileCount === 1 ? '' : 's'} in `) +
+      chalk.bold(project.name)
     )
-  } catch (err) {
+  } catch {
     spinner.fail(chalk.red('Search failed'))
-    console.error(err)
     process.exit(1)
   }
 }

@@ -19,7 +19,7 @@
   "homepage": "https://specdown.app",
   "repository": {
     "type": "git",
-    "url": "https://github.com/specdown/cli"
+    "url": "https://github.com/specdown-app/cli"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.97.0",
