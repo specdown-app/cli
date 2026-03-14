@@ -9,6 +9,10 @@ jobs:
     name: Build & publish specdown CLI
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      id-token: write  # Required for npm Trusted Publishing (OIDC)
+
     steps:
       - uses: actions/checkout@v4
 
@@ -39,9 +43,7 @@ jobs:
 
       - name: Publish to npm
         if: steps.version_check.outputs.skip == 'false'
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
 
       - name: Summary
         run: |
