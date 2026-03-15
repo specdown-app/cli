@@ -1,13 +1,34 @@
-# SpecDown CLI
+# SpecDown CLI — Markdown CLI for Spec as Code
 
 <p align="center">
   <img src="https://img.shields.io/npm/v/specdown-cli?color=blue" alt="npm version" />
   <img src="https://img.shields.io/node/v/specdown-cli" alt="node" />
   <img src="https://img.shields.io/npm/dm/specdown-cli" alt="downloads" />
+  <img src="https://img.shields.io/badge/spec--as--code-CLI-blueviolet" alt="spec as code" />
 </p>
 
-**CLI for [SpecDown](https://specdown.app)** — manage your Markdown spec docs from the terminal.
-Read, write, push, pull, and search spec documents. Works great in CI/CD pipelines and AI automation scripts.
+**Terminal interface for [SpecDown](https://specdown.app)** — the Spec as Code platform for engineering teams.
+
+Manage your Markdown spec docs from the terminal: read, write, push, pull, search, and sync. Built for spec-driven development workflows — works seamlessly in CI/CD pipelines, AI automation scripts, and DevOps toolchains.
+
+> **Pair with the [Markdown MCP Server](https://github.com/specdown-app/mcp-server)** to give Claude, Cursor, and Copilot direct access to your spec documents.
+
+---
+
+## Why a Markdown CLI?
+
+Most teams store specs in Word, Notion, or Google Docs — disconnected from code. **Spec as Code** means your Markdown spec lives in Git, version-controlled, terminal-accessible, and AI-readable.
+
+```bash
+# Pull latest spec and feed to AI for review
+specdown pull /api-spec.md | claude "what's missing from this spec?"
+
+# Push updated spec from CI/CD
+specdown push ./docs/openapi.md /api/openapi.md
+
+# Search across all spec documents
+specdown search "authentication flow"
+```
 
 ---
 
@@ -17,12 +38,6 @@ Read, write, push, pull, and search spec documents. Works great in CI/CD pipelin
 npm install -g specdown-cli
 ```
 
-Or run once without installing:
-
-```bash
-npx specdown-cli --help
-```
-
 **Requirements:** Node.js ≥ 18
 
 ---
@@ -30,17 +45,17 @@ npx specdown-cli --help
 ## Quick Start
 
 ```bash
-# 1. Login
+# 1. Login (opens browser — Google OAuth)
 specdown login
 
 # 2. Switch to a project
 specdown use my-project-slug
 
-# 3. List documents
+# 3. List spec documents
 specdown ls
 
-# 4. Read a document
-specdown read /README.md
+# 4. Read a spec document
+specdown read /api-design.md
 ```
 
 ---
@@ -62,35 +77,35 @@ specdown projects        # List all projects you have access to
 specdown use <slug>      # Switch active project
 ```
 
-### Documents
+### Browse & Read Markdown Docs
 
 ```bash
-specdown ls                          # List documents in active project
-specdown read <path>                 # Print document content to stdout
-specdown read <path> --from 10 --to 50   # Print lines 10–50
-specdown read <path> -n              # Print with line numbers
+specdown ls                              # List documents in active project
+specdown read <path>                     # Print document content to stdout
+specdown read <path> --from 10 --to 50  # Print lines 10–50
+specdown read <path> -n                 # Print with line numbers
 ```
 
-### Search
+### Search Across Spec Documents
 
 ```bash
 specdown search "authentication flow"
 specdown search "api" --files "design,api-spec"   # Restrict to specific docs
-specdown search "TODO" -C 5                       # 5 lines of context
+specdown search "TODO" -C 5                       # 5 lines of context around match
 ```
 
-### Create & Edit
+### Create Markdown Documents
 
 ```bash
-specdown new "API Design"            # Create a new document
+specdown new "API Design"            # Create a new Markdown document
 specdown new "Design" --folder       # Create a folder
 specdown new "Auth" -p /design       # Create inside a folder
 ```
 
-### Sync
+### Push & Pull — Markdown Git Sync Companion
 
 ```bash
-specdown push ./local-file.md /remote/path.md    # Upload local file to SpecDown
+specdown push ./local-file.md /remote/path.md    # Upload local Markdown to SpecDown
 specdown pull /remote/path.md                    # Print remote doc to stdout
 specdown pull /remote/path.md out.md             # Save to local file
 ```
@@ -99,14 +114,50 @@ specdown pull /remote/path.md out.md             # Save to local file
 
 ```bash
 specdown rm /path/to/doc.md          # Delete a document (with confirmation)
-specdown rm /path/to/doc.md --force  # Skip confirmation
+specdown rm /path/to/doc.md --force  # Skip confirmation prompt
+```
+
+---
+
+## CI/CD & DevOps Usage
+
+Use the CLI in automation scripts and pipelines — no interactive prompts needed:
+
+```bash
+# Set token via env var (CI/CD)
+SPECDOWN_ACCESS_TOKEN=<token> specdown ls
+
+# Auto-publish spec from CI pipeline
+specdown push ./docs/openapi.md /api/openapi.md
+
+# Pull spec and validate in pipeline
+specdown pull /api-spec.md > /tmp/spec.md && validate-spec /tmp/spec.md
+
+# Spec-driven development: pull spec, pass to AI, implement
+specdown pull /feature-spec.md | claude "implement this feature"
+```
+
+---
+
+## AI Integration — Spec CLI + Markdown MCP
+
+Combine the CLI with the **[SpecDown MCP Server](https://github.com/specdown-app/mcp-server)** for full AI-native spec workflows:
+
+| Tool | Use case |
+|------|----------|
+| `specdown-cli` | Terminal, CI/CD, scripting, automation |
+| `specdown-mcp` | Claude, Cursor, Copilot — AI reads spec directly |
+
+```bash
+# Your API key (from specdown login) works for both CLI and MCP
+cat ~/.specdown/config.json
 ```
 
 ---
 
 ## Configuration
 
-Credentials are stored in `~/.specdown/config.json` after login. No environment variables required for standard use.
+Credentials stored in `~/.specdown/config.json` after login:
 
 ```json
 {
@@ -121,46 +172,11 @@ Credentials are stored in `~/.specdown/config.json` after login. No environment 
 
 ---
 
-## CI/CD Usage
-
-Use environment variables for non-interactive environments:
-
-```bash
-# In CI: set token directly, skip login prompt
-SPECDOWN_ACCESS_TOKEN=<token> specdown ls
-```
-
-Or use the CLI in automation scripts:
-
-```bash
-# Pull latest spec and pass to AI
-specdown pull /api-spec.md | claude "suggest improvements"
-
-# Auto-publish docs from CI
-specdown push ./docs/openapi.md /api/openapi.md
-```
-
----
-
-## AI Usage (MCP)
-
-Pair the CLI with the [SpecDown MCP Server](https://github.com/specdown-app/mcp-server) to give Claude, Cursor, and other AI assistants direct access to your specs:
-
-```bash
-# Install MCP server
-npm install -g specdown-mcp
-
-# Your API key is in ~/.specdown/config.json after login
-cat ~/.specdown/config.json
-```
-
----
-
 ## Links
 
-- [SpecDown](https://specdown.app) — Spec-as-Code platform
+- [SpecDown](https://specdown.app) — Markdown editor online, Spec as Code platform
+- [MCP Server](https://github.com/specdown-app/mcp-server) — Markdown MCP for AI assistants
 - [Docs](https://specdown.app/docs)
-- [MCP Server](https://github.com/specdown-app/mcp-server) — AI integration
 - [GitHub](https://github.com/specdown-app/cli)
 - [Report issue](https://github.com/specdown-app/cli/issues)
 
