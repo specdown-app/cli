@@ -14,11 +14,13 @@ Read, write, push, pull, and search spec documents. Works great in CI/CD pipelin
 ## Install
 
 ```bash
-# Run without installing (recommended):
-npx specdown-cli --help
-
-# Or install globally:
 npm install -g specdown-cli
+```
+
+Or run once without installing:
+
+```bash
+npx specdown-cli --help
 ```
 
 **Requirements:** Node.js ≥ 18
@@ -48,7 +50,7 @@ specdown read /README.md
 ### Authentication
 
 ```bash
-specdown login           # Sign in with email + password
+specdown login           # Sign in via browser (Google OAuth)
 specdown logout          # Sign out and clear credentials
 specdown whoami          # Show current user and active project
 ```

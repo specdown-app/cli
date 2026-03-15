@@ -1,4 +1,7 @@
 import { Command } from 'commander'
+import { checkForUpdate } from './lib/update-check.js'
+
+checkForUpdate()
 import { login } from './commands/login.js'
 import { logout } from './commands/logout.js'
 import { whoami } from './commands/whoami.js'
