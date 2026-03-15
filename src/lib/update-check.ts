@@ -1,22 +1,7 @@
 import chalk from 'chalk'
-import { createRequire } from 'node:module'
-import { fileURLToPath } from 'node:url'
-import { dirname, join } from 'node:path'
 
 const PKG_NAME = 'specdown-cli'
 const REGISTRY_URL = `https://registry.npmjs.org/${PKG_NAME}/latest`
-const CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000 // once per day
-
-function getCurrentVersion(): string {
-  try {
-    const require = createRequire(import.meta.url)
-    const pkgPath = join(dirname(fileURLToPath(import.meta.url)), '../../package.json')
-    const pkg = require(pkgPath) as { version: string }
-    return pkg.version
-  } catch {
-    return '0.0.0'
-  }
-}
 
 function compareVersions(current: string, latest: string): boolean {
   const parse = (v: string) => v.split('.').map(Number)
@@ -28,11 +13,9 @@ function compareVersions(current: string, latest: string): boolean {
 }
 
 /** Fire-and-forget: prints upgrade notice after command finishes if outdated. */
-export function checkForUpdate(): void {
+export function checkForUpdate(current: string): void {
   // Skip if running via npx (always latest) or in CI
   if (process.env.npm_lifecycle_event === 'npx' || process.env.CI) return
-
-  const current = getCurrentVersion()
 
   // Throttle: store last-checked time in env to avoid hitting registry on every command.
   // We do a best-effort fire-and-forget — no error surfaced to user.

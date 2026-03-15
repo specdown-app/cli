@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path'
 const _require = createRequire(import.meta.url)
 const _pkg = _require(join(dirname(fileURLToPath(import.meta.url)), '../package.json')) as { version: string }
 
-checkForUpdate()
+checkForUpdate(_pkg.version)
 import { login } from './commands/login.js'
 import { logout } from './commands/logout.js'
 import { whoami } from './commands/whoami.js'

@@ -1,12 +1,19 @@
 import http from 'node:http'
 import { exec } from 'node:child_process'
 import crypto from 'node:crypto'
+import { URL } from 'node:url'
 import chalk from 'chalk'
 import ora from 'ora'
 import { writeConfig } from '../lib/config.js'
 
 const APP_URL = 'https://specdown.app'
 const TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes
+
+const SUCCESS_HTML = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>SpecDown CLI</title>
+<style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#0a0a0a;color:#fff}
+.card{text-align:center;padding:2rem;border-radius:1rem;border:1px solid #333;background:#111;max-width:320px}
+h2{margin:0 0 .5rem}p{color:#888;margin:0}</style></head>
+<body><div class="card"><div style="font-size:3rem">✅</div><h2>Logged in!</h2><p>You can close this tab and return to your terminal.</p></div></body></html>`
 
 function openBrowser(url: string) {
   const platform = process.platform
@@ -28,59 +35,39 @@ export async function login() {
 
   return new Promise<void>((resolve, reject) => {
     const server = http.createServer((req, res) => {
-      // Allow CORS from the SpecDown web app
-      res.setHeader('Access-Control-Allow-Origin', APP_URL)
-      res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-
-      if (req.method === 'OPTIONS') {
-        res.writeHead(204)
-        res.end()
-        return
-      }
-
-      if (req.method !== 'POST') {
+      if (req.method !== 'GET') {
         res.writeHead(405)
         res.end()
         return
       }
 
-      let body = ''
-      req.on('data', (chunk) => { body += chunk })
-      req.on('end', () => {
-        try {
-          const payload = JSON.parse(body) as {
-            state: string
-            access_token: string
-            refresh_token: string
-            email: string
-            user_id: string
-          }
+      try {
+        const parsed = new URL(req.url ?? '/', `http://127.0.0.1:${port}`)
+        const params = parsed.searchParams
 
-          if (payload.state !== state) {
-            res.writeHead(403)
-            res.end(JSON.stringify({ error: 'Invalid state' }))
-            return
-          }
-
-          writeConfig({
-            access_token: payload.access_token,
-            refresh_token: payload.refresh_token,
-            user_email: payload.email,
-            user_id: payload.user_id,
-          })
-
-          res.writeHead(200)
-          res.end(JSON.stringify({ ok: true }))
-
-          spinner.succeed(chalk.green(`Logged in as ${chalk.bold(payload.email)}`))
-          server.close()
-          resolve()
-        } catch {
-          res.writeHead(400)
-          res.end(JSON.stringify({ error: 'Bad request' }))
+        if (params.get('state') !== state) {
+          res.writeHead(403, { 'Content-Type': 'text/plain' })
+          res.end('Invalid state')
+          return
         }
-      })
+
+        writeConfig({
+          access_token: params.get('access_token') ?? '',
+          refresh_token: params.get('refresh_token') ?? '',
+          user_email: params.get('email') ?? '',
+          user_id: params.get('user_id') ?? '',
+        })
+
+        res.writeHead(200, { 'Content-Type': 'text/html' })
+        res.end(SUCCESS_HTML)
+
+        spinner.succeed(chalk.green(`Logged in as ${chalk.bold(params.get('email'))}`))
+        server.close()
+        resolve()
+      } catch {
+        res.writeHead(400)
+        res.end('Bad request')
+      }
     })
 
     const spinner = ora()
