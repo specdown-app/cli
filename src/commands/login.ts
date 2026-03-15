@@ -9,11 +9,6 @@ import { writeConfig } from '../lib/config.js'
 const APP_URL = 'https://specdown.app'
 const TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes
 
-const SUCCESS_HTML = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>SpecDown CLI</title>
-<style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#0a0a0a;color:#fff}
-.card{text-align:center;padding:2rem;border-radius:1rem;border:1px solid #333;background:#111;max-width:320px}
-h2{margin:0 0 .5rem}p{color:#888;margin:0}</style></head>
-<body><div class="card"><div style="font-size:3rem">✅</div><h2>Logged in!</h2><p>You can close this tab and return to your terminal.</p></div></body></html>`
 
 function openBrowser(url: string) {
   const platform = process.platform
@@ -58,8 +53,9 @@ export async function login() {
           user_id: params.get('user_id') ?? '',
         })
 
-        res.writeHead(200, { 'Content-Type': 'text/html' })
-        res.end(SUCCESS_HTML)
+        // Redirect back to specdown.app so the browser never stays on localhost
+        res.writeHead(302, { Location: `${APP_URL}/cli/auth/success` })
+        res.end()
 
         spinner.succeed(chalk.green(`Logged in as ${chalk.bold(params.get('email'))}`))
         server.close()
