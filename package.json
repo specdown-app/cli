@@ -1,6 +1,6 @@
 {
   "name": "specdown-cli",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "CLI for SpecDown — manage spec docs from your terminal",
   "type": "module",
   "engines": {

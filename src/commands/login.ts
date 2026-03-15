@@ -58,8 +58,7 @@ export async function login() {
         res.end()
 
         spinner.succeed(chalk.green(`Logged in as ${chalk.bold(params.get('email'))}`))
-        server.close()
-        resolve()
+        server.close(() => process.exit(0))
       } catch {
         res.writeHead(400)
         res.end('Bad request')
