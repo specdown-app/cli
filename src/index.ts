@@ -1,5 +1,11 @@
 import { Command } from 'commander'
 import { checkForUpdate } from './lib/update-check.js'
+import { createRequire } from 'node:module'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
+
+const _require = createRequire(import.meta.url)
+const _pkg = _require(join(dirname(fileURLToPath(import.meta.url)), '../package.json')) as { version: string }
 
 checkForUpdate()
 import { login } from './commands/login.js'
@@ -20,7 +26,7 @@ const program = new Command()
 program
   .name('specdown')
   .description('Manage SpecDown docs from your terminal')
-  .version('0.1.0')
+  .version(_pkg.version)
 
 program
   .command('login')
