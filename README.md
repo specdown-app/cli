@@ -1,23 +1,24 @@
-# SpecDown CLI — Markdown CLI for Spec as Code
+# SpecDown CLI — AI-Native Markdown CLI for Spec as Code
 
 <p align="center">
   <img src="https://img.shields.io/npm/v/specdown-cli?color=blue" alt="npm version" />
   <img src="https://img.shields.io/node/v/specdown-cli" alt="node" />
   <img src="https://img.shields.io/npm/dm/specdown-cli" alt="downloads" />
   <img src="https://img.shields.io/badge/spec--as--code-CLI-blueviolet" alt="spec as code" />
+  <img src="https://img.shields.io/badge/AI--native-CLI-orange" alt="ai-native" />
 </p>
 
-**Terminal interface for [SpecDown](https://specdown.app)** — the Spec as Code platform for engineering teams.
+**AI-native terminal interface for [SpecDown](https://specdown.app)** — the AI-native Spec as Code platform for engineering teams.
 
-Manage your Markdown spec docs from the terminal: read, write, push, pull, search, and sync. Built for spec-driven development workflows — works seamlessly in CI/CD pipelines, AI automation scripts, and DevOps toolchains.
+Manage your Markdown spec docs from the terminal: read, write, push, pull, search, and sync. Built for AI-native spec-driven development workflows — works seamlessly in CI/CD pipelines, AI automation scripts, and DevOps toolchains.
 
 > **Pair with the [Markdown MCP Server](https://github.com/specdown-app/mcp-server)** to give Claude, Cursor, and Copilot direct access to your spec documents.
 
 ---
 
-## Why a Markdown CLI?
+## Why an AI-Native Markdown CLI?
 
-Most teams store specs in Word, Notion, or Google Docs — disconnected from code. **Spec as Code** means your Markdown spec lives in Git, version-controlled, terminal-accessible, and AI-readable.
+Most teams store specs in Word, Notion, or Google Docs — disconnected from code. **AI-native Spec as Code** means your Markdown spec lives in Git, version-controlled, terminal-accessible, and AI-operable.
 
 ```bash
 # Pull latest spec and feed to AI for review
@@ -139,9 +140,9 @@ specdown pull /feature-spec.md | claude "implement this feature"
 
 ---
 
-## AI Integration — Spec CLI + Markdown MCP
+## AI-Native Integration — Spec CLI + Markdown MCP
 
-Combine the CLI with the **[SpecDown MCP Server](https://github.com/specdown-app/mcp-server)** for full AI-native spec workflows:
+Combine the CLI with the **[SpecDown MCP Server](https://github.com/specdown-app/mcp-server)** for full AI-native spec workflows — making your entire spec pipeline AI-operable:
 
 | Tool | Use case |
 |------|----------|
