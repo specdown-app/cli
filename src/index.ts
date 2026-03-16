@@ -25,7 +25,7 @@ const program = new Command()
 
 program
   .name('specdown')
-  .description('Manage SpecDown docs from your terminal')
+  .description('AI-native Markdown spec manager — manage docs, sync Git, and connect AI assistants from your terminal')
   .version(_pkg.version)
 
 program

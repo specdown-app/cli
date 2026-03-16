@@ -1,7 +1,7 @@
 {
   "name": "specdown-cli",
   "version": "0.1.6",
-  "description": "CLI for SpecDown — manage spec docs from your terminal",
+  "description": "AI-native CLI for SpecDown — manage spec docs, sync Git, and connect AI assistants from your terminal",
   "type": "module",
   "engines": {
     "node": ">=18"
@@ -22,7 +22,14 @@
     "cli",
     "docs",
     "markdown",
-    "spec"
+    "spec",
+    "ai-native",
+    "ai-native-cli",
+    "mcp",
+    "spec-as-code",
+    "spec-driven",
+    "markdown-cli",
+    "ai-operable"
   ],
   "author": "SpecDown",
   "license": "MIT",
