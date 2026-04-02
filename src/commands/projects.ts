@@ -5,7 +5,7 @@ import { requireAuth } from '../lib/config.js'
 
 export async function listProjects() {
   const cfg = requireAuth()
-  const supabase = getClient(cfg)
+  const supabase = await getClient(cfg)
   const spinner = ora('Fetching projects…').start()
 
   try {

@@ -2,20 +2,17 @@ import chalk from 'chalk'
 import ora from 'ora'
 import { getClient } from '../lib/api.js'
 import { requireAuth, requireProject } from '../lib/config.js'
+import { normalizePath } from '../lib/path.js'
 
 interface NewOptions {
   folder?: boolean
   parent?: string
 }
 
-function normalizePath(p: string) {
-  return p.startsWith('/') ? p : `/${p}`
-}
-
 export async function newDoc(title: string, opts: NewOptions) {
   const cfg = requireAuth()
   const project = requireProject(cfg)
-  const supabase = getClient(cfg)
+  const supabase = await getClient(cfg)
   const spinner = ora('Creating…').start()
 
   try {

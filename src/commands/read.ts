@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import ora from 'ora'
 import { getClient } from '../lib/api.js'
 import { requireAuth, requireProject } from '../lib/config.js'
+import { normalizePath } from '../lib/path.js'
 
 interface ReadOptions {
   from?: string
@@ -9,14 +10,10 @@ interface ReadOptions {
   lineNumbers?: boolean
 }
 
-function normalizePath(p: string) {
-  return p.startsWith('/') ? p : `/${p}`
-}
-
 export async function readDoc(pathArg: string, opts: ReadOptions) {
   const cfg = requireAuth()
   const project = requireProject(cfg)
-  const supabase = getClient(cfg)
+  const supabase = await getClient(cfg)
   const spinner = ora('Fetching document…').start()
 
   try {

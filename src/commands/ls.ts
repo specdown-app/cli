@@ -53,7 +53,7 @@ function printTree(nodes: TreeNode[], prefix = '') {
 export async function ls() {
   const cfg = requireAuth()
   const project = requireProject(cfg)
-  const supabase = getClient(cfg)
+  const supabase = await getClient(cfg)
   const spinner = ora('Loading documents…').start()
 
   try {

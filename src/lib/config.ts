@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync } from 'fs'
 import { homedir } from 'os'
 import { join } from 'path'
 
@@ -25,12 +25,12 @@ export function readConfig(): Config | null {
 }
 
 export function writeConfig(config: Config): void {
-  if (!existsSync(CONFIG_DIR)) mkdirSync(CONFIG_DIR, { recursive: true })
-  writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2), 'utf-8')
+  if (!existsSync(CONFIG_DIR)) mkdirSync(CONFIG_DIR, { recursive: true, mode: 0o700 })
+  writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2), { encoding: 'utf-8', mode: 0o600 })
 }
 
 export function clearConfig(): void {
-  if (existsSync(CONFIG_FILE)) writeFileSync(CONFIG_FILE, '{}', 'utf-8')
+  if (existsSync(CONFIG_FILE)) unlinkSync(CONFIG_FILE)
 }
 
 export function requireAuth(): Config {

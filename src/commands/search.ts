@@ -51,7 +51,7 @@ function printContextLine(lineNo: number, line: string) {
 export async function search(query: string, opts: SearchOptions) {
   const cfg = requireAuth()
   const project = requireProject(cfg)
-  const supabase = getClient(cfg)
+  const supabase = await getClient(cfg)
   const contextLines = Math.min(parseInt(opts.context ?? '2', 10), 10)
 
   const spinner = ora('Searching…').start()

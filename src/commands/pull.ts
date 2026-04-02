@@ -4,15 +4,12 @@ import chalk from 'chalk'
 import ora from 'ora'
 import { getClient } from '../lib/api.js'
 import { requireAuth, requireProject } from '../lib/config.js'
-
-function normalizePath(p: string) {
-  return p.startsWith('/') ? p : `/${p}`
-}
+import { normalizePath } from '../lib/path.js'
 
 export async function pull(docPath: string, outFile?: string) {
   const cfg = requireAuth()
   const project = requireProject(cfg)
-  const supabase = getClient(cfg)
+  const supabase = await getClient(cfg)
   const spinner = ora(`Pulling ${docPath}…`).start()
 
   try {

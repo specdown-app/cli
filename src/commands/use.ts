@@ -5,7 +5,7 @@ import { readConfig, requireAuth, writeConfig } from '../lib/config.js'
 
 export async function useProject(slug: string) {
   const cfg = requireAuth()
-  const supabase = getClient(cfg)
+  const supabase = await getClient(cfg)
   const spinner = ora(`Switching to project "${slug}"…`).start()
 
   try {

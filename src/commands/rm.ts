@@ -3,15 +3,12 @@ import ora from 'ora'
 import { getClient } from '../lib/api.js'
 import { requireAuth, requireProject } from '../lib/config.js'
 import { ask } from '../lib/prompt.js'
-
-function normalizePath(p: string) {
-  return p.startsWith('/') ? p : `/${p}`
-}
+import { normalizePath } from '../lib/path.js'
 
 export async function rm(docPath: string, opts: { force?: boolean }) {
   const cfg = requireAuth()
   const project = requireProject(cfg)
-  const supabase = getClient(cfg)
+  const supabase = await getClient(cfg)
   const fullPath = normalizePath(docPath)
   const spinner = ora(`Looking up ${fullPath}…`).start()
 

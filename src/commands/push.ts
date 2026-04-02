@@ -3,12 +3,9 @@ import chalk from 'chalk'
 import ora from 'ora'
 import { getClient } from '../lib/api.js'
 import { requireAuth, requireProject } from '../lib/config.js'
+import { normalizePath } from '../lib/path.js'
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024 // 10 MB
-
-function normalizePath(p: string) {
-  return p.startsWith('/') ? p : `/${p}`
-}
 
 export async function push(filePath: string, docPath: string) {
   if (!existsSync(filePath)) {
@@ -25,7 +22,7 @@ export async function push(filePath: string, docPath: string) {
   const content = readFileSync(filePath, 'utf-8')
   const cfg = requireAuth()
   const project = requireProject(cfg)
-  const supabase = getClient(cfg)
+  const supabase = await getClient(cfg)
   const fullPath = normalizePath(docPath)
   const spinner = ora(`Pushing ${filePath} → ${fullPath}…`).start()
 
