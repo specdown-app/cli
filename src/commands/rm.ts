@@ -30,7 +30,7 @@ export async function rm(docPath: string, opts: { force?: boolean }) {
 
     if (!opts.force) {
       const answer = await ask(
-        chalk.yellow(`Delete "${data.title}"${data.is_folder ? ' (folder + all children)' : ''}? [y/N] `)
+        chalk.yellow(`Delete "${data.title}"${data.is_folder ? ' (folder only)' : ''}? [y/N] `)
       )
       if (answer.toLowerCase() !== 'y') {
         console.log('Aborted.')
