@@ -20,6 +20,7 @@ import { push } from './commands/push.js'
 import { pull } from './commands/pull.js'
 import { rm } from './commands/rm.js'
 import { search } from './commands/search.js'
+import { uploadImage } from './commands/image.js'
 
 const program = new Command()
 
@@ -84,6 +85,12 @@ program
   .command('push <file> <doc-path>')
   .description('Upload a local file to a document path in SpecDown')
   .action(push)
+
+program
+  .command('image <file>')
+  .description('Upload a local image and print the markdown link')
+  .option('-d, --doc <path>', 'Associate the image with a specific document path')
+  .action(uploadImage)
 
 program
   .command('pull <doc-path> [out-file]')

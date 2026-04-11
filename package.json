@@ -1,6 +1,6 @@
 {
   "name": "specdown-cli",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "AI-native CLI for SpecDown — manage spec docs, sync Git, and connect AI assistants from your terminal",
   "type": "module",
   "engines": {

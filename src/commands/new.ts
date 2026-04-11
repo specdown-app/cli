@@ -50,7 +50,6 @@ export async function newDoc(title: string, opts: NewOptions) {
         title,
         slug: docSlug,
         path: dirPath,
-        full_path: fullPath,
         is_folder: opts.folder ?? false,
         parent_id: parentId,
         sort_order: 9999,
@@ -61,8 +60,11 @@ export async function newDoc(title: string, opts: NewOptions) {
 
     if (error) throw error
     spinner.succeed(chalk.green(`Created: ${data.full_path}`))
-  } catch {
+  } catch (err) {
     spinner.fail(chalk.red('Failed to create document'))
+    if (err instanceof Error && err.message) {
+      console.error(chalk.dim(err.message))
+    }
     process.exit(1)
   }
 }

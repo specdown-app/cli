@@ -111,6 +111,13 @@ specdown pull /remote/path.md                    # Print remote doc to stdout
 specdown pull /remote/path.md out.md             # Save to local file
 ```
 
+### Image Uploads
+
+```bash
+specdown image ./diagram.png                     # Upload image and print markdown
+specdown image ./diagram.png --doc /api/spec.md # Associate the asset with a document
+```
+
 ### Delete
 
 ```bash
