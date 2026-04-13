@@ -18,9 +18,14 @@ import { readDoc } from './commands/read.js'
 import { newDoc } from './commands/new.js'
 import { push } from './commands/push.js'
 import { pull } from './commands/pull.js'
+import { diffLinkedProject } from './commands/diff.js'
 import { rm } from './commands/rm.js'
 import { search } from './commands/search.js'
 import { uploadImage } from './commands/image.js'
+import { linkProject } from './commands/link.js'
+import { unlinkProject } from './commands/unlink.js'
+import { status } from './commands/status.js'
+import { syncLinkedProject } from './commands/sync.js'
 
 const program = new Command()
 
@@ -55,6 +60,25 @@ program
   .action(useProject)
 
 program
+  .command('link <slug>')
+  .description('Link the active local folder to a SpecDown project')
+  .option('-d, --dir <path>', 'Local directory to link', '.')
+  .option('-p, --prefix <path>', 'Remote path prefix', '/')
+  .action(linkProject)
+
+program
+  .command('unlink')
+  .description('Remove the SpecDown project link from this folder')
+  .option('-d, --dir <path>', 'Local directory to unlink', '.')
+  .action(unlinkProject)
+
+program
+  .command('status')
+  .description('Show sync status for the linked local folder')
+  .option('-d, --dir <path>', 'Local directory to inspect', '.')
+  .action(status)
+
+program
   .command('ls')
   .description('List documents in the active project')
   .action(ls)
@@ -82,8 +106,11 @@ program
   .action(newDoc)
 
 program
-  .command('push <file> <doc-path>')
+  .command('push [file] [doc-path]')
   .description('Upload a local file to a document path in SpecDown')
+  .option('--yes', 'Skip sync confirmation prompt')
+  .option('-f, --force', 'Continue sync even if conflicts are detected')
+  .option('-d, --dir <path>', 'Linked directory', '.')
   .action(push)
 
 program
@@ -93,9 +120,27 @@ program
   .action(uploadImage)
 
 program
-  .command('pull <doc-path> [out-file]')
+  .command('pull [doc-path] [out-file]')
   .description('Download a document from SpecDown (or print to stdout)')
+  .option('--yes', 'Skip sync confirmation prompt')
+  .option('-f, --force', 'Continue sync even if conflicts are detected')
+  .option('-d, --dir <path>', 'Linked directory', '.')
   .action(pull)
+
+program
+  .command('diff')
+  .description('Show differences between the linked local folder and the remote SpecDown project')
+  .option('-d, --dir <path>', 'Linked directory', '.')
+  .action(diffLinkedProject)
+
+program
+  .command('sync')
+  .description('Sync the linked local folder with SpecDown')
+  .option('--watch', 'Continuously watch the linked folder for changes')
+  .option('--yes', 'Skip confirmation prompts')
+  .option('-f, --force', 'Force overwrite during conflicts')
+  .option('-d, --dir <path>', 'Linked directory', '.')
+  .action(syncLinkedProject)
 
 program
   .command('rm <path>')

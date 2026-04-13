@@ -111,6 +111,26 @@ specdown pull /remote/path.md                    # Print remote doc to stdout
 specdown pull /remote/path.md out.md             # Save to local file
 ```
 
+### Linked Folder Sync
+
+```bash
+specdown link my-project-slug                    # Link the current folder to a SpecDown project
+specdown status                                 # Show local vs remote sync summary
+specdown diff                                   # Show grouped sync changes
+specdown sync                                   # Apply bidirectional linked-folder sync
+specdown sync --watch --yes                     # Keep the linked folder continuously synced
+specdown push                                   # Push the linked folder (asks before overwrite)
+specdown push --yes                             # Skip the confirmation prompt
+specdown push --force                           # Apply linked-folder push even with conflicts
+specdown pull                                   # Pull the linked folder (asks before overwrite)
+specdown pull --force                           # Overwrite local conflicts with remote content
+specdown unlink                                 # Remove the local project link
+```
+
+Linked-folder mode stores a manifest in `.specdown/project.json` and a sync state snapshot in `.specdown/sync-state.json`. This gives SpecDown a git-like working-copy flow without requiring a Git remote.
+
+`sync` applies non-conflicting local and remote changes in one run. `sync --force` still leaves conflict paths unresolved, but continues the rest of the sync. `sync --watch` debounces filesystem change bursts and never overlaps two sync runs. Watch mode requires `--yes`.
+
 ### Image Uploads
 
 ```bash
@@ -154,7 +174,7 @@ Combine the CLI with the **[SpecDown MCP Server](https://github.com/specdown-app
 | Tool | Use case |
 |------|----------|
 | `specdown-cli` | Terminal, CI/CD, scripting, automation |
-| `specdown-mcp` | Claude, Cursor, Copilot — AI reads spec directly |
+| `specdown-mcp` | Claude, Cursor, Copilot — AI reads spec directly and can plan/apply sync operations |
 
 ```bash
 # Your API key (from specdown login) works for both CLI and MCP
