@@ -22,6 +22,7 @@ import { diffLinkedProject } from './commands/diff.js'
 import { rm } from './commands/rm.js'
 import { search } from './commands/search.js'
 import { uploadImage } from './commands/image.js'
+import { fileCommand } from './commands/file.js'
 import { linkProject } from './commands/link.js'
 import { unlinkProject } from './commands/unlink.js'
 import { status } from './commands/status.js'
@@ -118,6 +119,8 @@ program
   .description('Upload a local image and print the markdown link')
   .option('-d, --doc <path>', 'Associate the image with a specific document path')
   .action(uploadImage)
+
+program.addCommand(fileCommand)
 
 program
   .command('pull [doc-path] [out-file]')

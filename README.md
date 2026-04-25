@@ -138,6 +138,18 @@ specdown image ./diagram.png                     # Upload image and print markdo
 specdown image ./diagram.png --doc /api/spec.md # Associate the asset with a document
 ```
 
+### Project Attachments
+
+```bash
+specdown file upload ./assets/brief.pdf /assets/brief.pdf  # Upload preview-only attachment
+specdown file list /assets                                 # List attachments by prefix
+specdown file read /assets/config.json                     # Print text-like file content
+specdown file read /assets/brief.pdf ./brief.pdf           # Download binary attachment
+```
+
+Project attachments appear in the SpecDown file tree as preview-only files. Markdown documents can embed
+them with `[@/path/to/file]`, and the upload command prints that reference after a successful upload.
+
 ### Delete
 
 ```bash

@@ -6,6 +6,7 @@ import ora from 'ora'
 import { getClient } from '../lib/api.js'
 import { shouldProceedWithSync, formatConflictSummary, formatSyncPlanSummary, type SyncPromptArgs } from '../lib/confirmation.js'
 import { requireAuth, type Config } from '../lib/config.js'
+import { buildDocumentInsertFields } from '../lib/document-fields.js'
 import { watchLinkedFolder } from '../lib/fs-watch.js'
 import { readLinkManifest } from '../lib/link-config.js'
 import { scanLocalTree } from '../lib/local-tree.js'
@@ -35,17 +36,14 @@ function createRemotePathToLocalFile(root: string, remotePrefix: string, fullPat
 }
 
 function buildRemoteInsertPayload(cfg: Config, projectId: string, fullPath: string, content: string) {
-  const parts = fullPath.split('/')
-  const filename = parts.pop() ?? 'doc.md'
-  const dirPath = parts.length > 1 ? parts.join('/') + '/' : '/'
-  const slug = filename.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9.-]/g, '')
+  const { title, slug, path } = buildDocumentInsertFields(fullPath)
 
   return {
     project_id: projectId,
     created_by: cfg.user_id,
-    title: slug.replace(/\.md$/, ''),
+    title,
     slug,
-    path: dirPath,
+    path,
     is_folder: false,
     parent_id: null,
     sort_order: 9999,
