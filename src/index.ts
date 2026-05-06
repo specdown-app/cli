@@ -27,6 +27,7 @@ import { linkProject } from './commands/link.js'
 import { unlinkProject } from './commands/unlink.js'
 import { status } from './commands/status.js'
 import { syncLinkedProject } from './commands/sync.js'
+import { listComments } from './commands/comments.js'
 
 const program = new Command()
 
@@ -150,5 +151,16 @@ program
   .description('Delete a document or folder (soft delete)')
   .option('-f, --force', 'Skip confirmation prompt')
   .action(rm)
+
+const comments = program
+  .command('comments')
+  .description('Read comments on documents')
+
+comments
+  .command('list <path>')
+  .description('List comments on a document (threads with replies)')
+  .option('--unresolved', 'Show only unresolved threads')
+  .option('--json', 'Output JSON instead of formatted text')
+  .action(listComments)
 
 program.parseAsync(process.argv)
