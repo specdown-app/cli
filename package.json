@@ -1,6 +1,6 @@
 {
   "name": "specdown-cli",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "AI-native CLI for SpecDown — manage spec docs, sync Git, and connect AI assistants from your terminal",
   "type": "module",
   "engines": {
@@ -10,10 +10,13 @@
     "specdown": "dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "skills"
   ],
   "scripts": {
     "build": "tsup",
+    "prebuild": "node scripts/copy-skills.mjs",
+    "predev": "node scripts/copy-skills.mjs",
     "dev": "tsx src/index.ts",
     "prepublishOnly": "npm run build"
   },

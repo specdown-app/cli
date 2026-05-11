@@ -28,6 +28,7 @@ import { unlinkProject } from './commands/unlink.js'
 import { status } from './commands/status.js'
 import { syncLinkedProject } from './commands/sync.js'
 import { listComments } from './commands/comments.js'
+import { installSkills, skillsStatus } from './commands/install.js'
 
 const program = new Command()
 
@@ -162,5 +163,24 @@ comments
   .option('--unresolved', 'Show only unresolved threads')
   .option('--json', 'Output JSON instead of formatted text')
   .action(listComments)
+
+const install = program
+  .command('install')
+  .description('Install SpecDown extras (currently: skills)')
+
+install
+  .command('skills')
+  .description('Install the SpecDown AI skills bundle into your IDE/agent config directory')
+  .option('--for <tool>', 'Target tool: claude | cursor | codex | opencode | antigravity | agents')
+  .action(installSkills)
+
+const skills = program
+  .command('skills')
+  .description('Inspect the bundled SpecDown AI skills')
+
+skills
+  .command('status')
+  .description('Show bundled vs cached skill state')
+  .action(skillsStatus)
 
 program.parseAsync(process.argv)

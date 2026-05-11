@@ -1,6 +1,9 @@
 # Build output
 dist/
 
+# Build-time mirror of the repo-root /skills bundle (copied in by scripts/copy-skills.mjs)
+skills/
+
 # Dependencies
 node_modules/
 
