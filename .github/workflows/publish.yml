@@ -23,6 +23,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      # `scripts/copy-skills.mjs` mirrors the monorepo's `skills/` sibling into
+      # `cli/skills/` so the npm tarball ships it. In this standalone repo the
+      # sibling is absent, so the script now degrades gracefully (warns +
+      # keeps whatever already exists in `cli/skills/`). If the publish output
+      # needs to bundle skills, add a step above this that fetches them — for
+      # example a sparse-checkout of the monorepo using a PAT secret:
+      #
+      #   - uses: actions/checkout@v4
+      #     with:
+      #       repository: specdown-app/SpecDown-core
+      #       token: ${{ secrets.MONOREPO_READ_PAT }}
+      #       sparse-checkout: skills
+      #       path: monorepo
+      #   - run: cp -R monorepo/skills ./skills
       - name: Build
         run: npm run build
 
