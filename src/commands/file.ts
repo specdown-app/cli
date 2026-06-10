@@ -13,6 +13,8 @@ const MAX_FILE_BYTES = 50 * 1024 * 1024
 const CONTENT_TYPE_BY_EXTENSION: Record<string, string> = {
   '.csv': 'text/csv',
   '.gif': 'image/gif',
+  '.htm': 'text/html',
+  '.html': 'text/html',
   '.jpeg': 'image/jpeg',
   '.jpg': 'image/jpeg',
   '.json': 'application/json',
@@ -46,6 +48,8 @@ type ProjectFileRecord = {
   embed?: string
   content_text?: string | null
   content_text_excerpt?: string | null
+  kind?: string
+  editable_document?: boolean
 }
 
 async function getAccessToken() {
@@ -180,6 +184,11 @@ async function uploadProjectFile(localFilePath: string, remotePath?: string) {
       throw new Error(result.error ?? 'Project file upload failed')
     }
 
+    if (result.editable_document || result.kind === 'editable_document') {
+      spinner.succeed(chalk.green(`Uploaded editable document: ${result.full_path}`))
+      return
+    }
+
     spinner.succeed(chalk.green(`Uploaded: ${result.full_path}`))
     console.log(result.embed ?? `[@${result.full_path}]`)
     if (result.download_url) {
@@ -242,7 +251,7 @@ async function readProjectFile(remotePath: string, outFile?: string) {
 }
 
 export const fileCommand = new Command('file')
-  .description('Upload, list, and read preview-only project attachments')
+  .description('Upload project files; HTML/HTM becomes editable, other files become preview-only attachments')
 
 fileCommand
   .command('list [prefix]')
@@ -251,7 +260,7 @@ fileCommand
 
 fileCommand
   .command('upload <local-file> [remote-path]')
-  .description('Upload a local file as a project attachment and print its embed link')
+  .description('Upload a local file; HTML/HTM becomes editable, other files print an embed link')
   .action(uploadProjectFile)
 
 fileCommand

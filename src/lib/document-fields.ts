@@ -4,8 +4,8 @@ function normalizeFullPath(fullPath: string) {
   return withLeadingSlash.replace(/\/+/g, '/')
 }
 
-function stripMarkdownExtension(filename: string) {
-  return filename.replace(/\.(md|markdown|mdx)$/i, '')
+function stripDocumentExtension(filename: string) {
+  return filename.replace(/\.(md|markdown|mdx|html?)$/i, '')
 }
 
 export function buildDocumentInsertFields(fullPath: string) {
@@ -15,7 +15,7 @@ export function buildDocumentInsertFields(fullPath: string) {
   const path = parts.length > 1 ? `${parts.join('/')}/` : '/'
 
   return {
-    title: stripMarkdownExtension(filename),
+    title: stripDocumentExtension(filename),
     slug: filename,
     path,
   }
