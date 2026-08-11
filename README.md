@@ -75,8 +75,11 @@ specdown whoami          # Show current user and active project
 
 ```bash
 specdown projects        # List all projects you have access to
+specdown projects create "API Platform" --slug api-platform
 specdown use <slug>      # Switch active project
 ```
+
+New projects include a README and become the active CLI project. Account plan limits still apply.
 
 ### Browse & Read Markdown Docs
 
@@ -158,6 +161,22 @@ upload command prints that reference after a successful attachment upload.
 specdown rm /path/to/doc.md          # Delete a document (with confirmation)
 specdown rm /path/to/doc.md --force  # Skip confirmation prompt
 ```
+
+Deleting a folder also soft-deletes its descendants and project attachments under that path.
+
+### Share Links
+
+```bash
+specdown share create                         # Share the active project
+specdown share create /guides/api.md          # Share one document
+specdown share create --type password --password "secret12" --expires 7
+specdown share create --type private --emails "a@example.com,b@example.com"
+specdown share list
+specdown share revoke <share-id>              # Confirm before revoking
+specdown share revoke <share-id> --force      # Skip confirmation
+```
+
+Creating, listing, and revoking share links requires project admin access.
 
 ---
 

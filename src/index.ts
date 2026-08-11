@@ -29,6 +29,8 @@ import { status } from './commands/status.js'
 import { syncLinkedProject } from './commands/sync.js'
 import { listComments } from './commands/comments.js'
 import { installSkills, skillsStatus } from './commands/install.js'
+import { createProject } from './commands/create-project.js'
+import { createShare, listShares, revokeShare } from './commands/share.js'
 
 const program = new Command()
 
@@ -52,10 +54,17 @@ program
   .description('Show current user and active project')
   .action(whoami)
 
-program
+const projects = program
   .command('projects')
   .description('List all projects you have access to')
   .action(listProjects)
+
+projects.command('create <name>')
+  .description('Create a project and select it')
+  .option('--slug <slug>', 'Project slug (generated from name by default)')
+  .option('-d, --description <text>', 'Project description')
+  .option('--icon <value>', 'Project emoji or icon')
+  .action(createProject)
 
 program
   .command('use <slug>')
@@ -152,6 +161,27 @@ program
   .description('Delete a document or folder (soft delete)')
   .option('-f, --force', 'Skip confirmation prompt')
   .action(rm)
+
+const share = program
+  .command('share')
+  .description('Create and manage share links for the active project')
+
+share.command('create [path]')
+  .description('Create a project share, or a document share when path is provided')
+  .option('--type <type>', 'Share type: public | private | password', 'public')
+  .option('--password <password>', 'Password (required for password shares)')
+  .option('--emails <emails>', 'Comma-separated allowed emails for private shares')
+  .option('--expires <days>', 'Expire after this many days')
+  .action(createShare)
+
+share.command('list')
+  .description('List share links for the active project')
+  .action(listShares)
+
+share.command('revoke <share-id>')
+  .description('Revoke a share link')
+  .option('-f, --force', 'Skip confirmation prompt')
+  .action(revokeShare)
 
 const comments = program
   .command('comments')
