@@ -26,9 +26,9 @@ function activeProject() {
 
 export async function createShare(path: string | undefined, options: ShareCreateOptions) {
   const project = activeProject()
-  const expiresInDays = options.expires ? Number.parseInt(options.expires, 10) : undefined
-  if (options.expires && (!expiresInDays || expiresInDays < 1)) {
-    console.error(chalk.red('--expires must be a positive number of days'))
+  const expiresInDays = options.expires ? Number(options.expires) : undefined
+  if (options.expires && (!Number.isInteger(expiresInDays) || expiresInDays! < 1 || expiresInDays! > 3650)) {
+    console.error(chalk.red('--expires must be a whole number between 1 and 3650 days'))
     process.exitCode = 1
     return
   }
